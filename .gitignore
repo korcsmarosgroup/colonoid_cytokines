@@ -1,6 +1,7 @@
 */.RData
 */.Rhistory
-
+.Rhistory
+README.html
 input_data/expression_datasets/
 input_data/differential_expression_datasets/colonoids*
 input_data/causal_networks/
