@@ -1,0 +1,31 @@
+category	colour	colour2	colour3
+ifng	#FF0033	#FF9AA2	red
+"ifng,il13"	#FF9900	#FFDAC1	orange
+"ifng,il13,il17"	#cfa970	-	orange grey
+"ifng,il13,il17,tnfa"	#a3814d	-	orange grey blue
+"ifng,il13,tnfa"	#663300	#b29b87	red yellow blue
+"ifng,il17"	#cc6076	-	grey red
+"ifng,il17,tnfa"	#a674b3	-	grey red blue
+"ifng,tnfa"	#CC00FF	#c1aee5	purple
+il13	#FFFF00	#fdfd96	yellow
+"il13,il17"	#f0e68c	#F0E68C	grey yellow
+"il13,il17,tnfa"	#5c7a4d	-	grey yellow blue
+"il13,tnfa"	#339900	#B5EAD7	green
+il17	#8e8d8d	#A9A9A9	grey
+"il17,tnfa"	#646e8c	#7FA4B2	blue grey
+tnfa	#3366FF	#779ecb	blue
+IFNG	#FF0033	#FF9AA2	red
+"IFNG,IL13"	#FF9900	#FFDAC1	orange
+"IFNG,IL13,IL17"	#cfa970	-	orange grey
+"IFNG,IL13,IL17,TNFA"	#a3814d	-	orange grey blue
+"IFNG,IL13,TNFA"	#663300	#b29b87	red yellow blue
+"IFNG,IL17"	#cc6076	-	grey red
+"IFNG,IL17,TNFA"	#a674b3	-	grey red blue
+"IFNG,TNFA"	#CC00FF	#c1aee5	purple
+IL13	#FFFF00	#fdfd96	yellow
+"IL13,IL17"	#f0e68c	#F0E68C	grey yellow
+"IL13,IL17,TNFA"	#5c7a4d	-	grey yellow blue
+"IL13,TNFA"	#339900	#B5EAD7	green
+IL17	#8e8d8d	#A9A9A9	grey
+"IL17,TNFA"	#646e8c	#7FA4B2	blue grey
+TNFA	#3366FF	#779ecb	blue
