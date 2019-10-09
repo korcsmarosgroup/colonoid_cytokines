@@ -6,7 +6,7 @@ In brief, colonoids were grown from healthy human colon biopses. Whole organoid 
 
 The code and input files contained in this repository (described below) are grouped by function and should (on the whole) be carried out in the order written below. 
 
-## **Prepare prior knowledge**
+## **--Prepare prior knowledge--**
 
 Two prior knowledge networks are used in the analysis: OmniPath for signalling pathways (protein - protein interactions) and DoRothEA for regulatory connections (Transcription factors (TFs) - target genes (TGs)).
 
@@ -35,7 +35,7 @@ The input and output files are located in the folder *input_data/prior_knowledge
 #### Code
 Script: *prepare_prior_knowledge_networks/add_ensembl_ids_to_dorothea.R*
 
-## **Causal network generation**
+## **--Causal network generation--**
 
 The causal networks consist of four separate levels. The cytokine and receptor levels were constructed using manually curated information on published cytokine receptors (see *Prepare prior knowledge* section). The signalling level of the networks connects cytokine receptors to transcription factors through the shortest possible paths of protein-protein interactions (PPIs). All paths consist of three or less intermediary signaling mediators making a total of six or less steps between the cytokine and the differentially expressed genes (DEGs). All proteins of the signalling level, including the cytokine receptors, are expressed in the organoid transcriptomics data for the relevant cytokine (FPKM >0 in >= 2 replicates) and in the colon dataset from the Human Protein Atlas (Uhlén et al. 2015). Signalling connections between the proteins were obtained from the OmniPath database (v0.7.111) (Türei et al. 2016). 
 
@@ -71,7 +71,7 @@ They are then filtered externally and read into the script upon the second run t
 
 Script: *causal_network_generation/network_generation.py*
 
-## **Network visualisation** 
+## **--Network visualisation--** 
 
 The Cytoscape-R interface package RCy3 is applied to programatically load the generated causal networks into Cytoscape and to carry out the majority of the visualisation.
 
@@ -83,7 +83,7 @@ The script requires the cytokine-DEG networks and the processed DEG lists which 
 
 RCy3 is implemented in the script *network_visualisation/cytoscape_cytokine_deg_networks.R*
 
-## **Figures and summaries**
+## **--Figures and summaries--**
 
 This stage of the analysis contains a number of different scripts to summarise and/or visualise the networks. 
 
@@ -122,7 +122,7 @@ Here, there are two script to  generate plots summarising all networks at once. 
 1. *figures_and_summaries/chord_diagrams.R*
 2. *figures_and_summaries/circus_plot.R*
 
-## **Shared interactions**
+## **--Shared interactions--**
 
 The combine_network_data.py (see 'Summarise networks' section) run previously, outputs a matrix-style table of which interactions are shared between the cytokine networks. 
 This output file should be copied and all interactions not shared by at least 2 networks (count < 2) should be deleted from the file. Consequently this file can be imported into the cytoscape script below to create, visualise and save subnetworks where each subnetwork has all interactions shared between one combination of cytokines eg. tnfa and ifng, il13 and ifng). 
@@ -142,7 +142,7 @@ This script carries out functional enrichment analysis on the DEGs targeted by e
 #### Code
 *functional_enrichment/functional_enrichment_analysis.R*
 
-## **Colonoids vs biopsies**
+## **--Colonoids vs biopsies--**
 
 This step of the project compares the cytokine treated colonoid data (prior to network generation) to data obtained from transcriptomics on ulcerative colitis (UC) and Crohn's disease (CD) biopsies. The biopsy data is publically available (GSE16879) and was preprocessed to generate differentially expressed genes prior to running the following scripts. The first script creates chord diagram plots showing the connection/overlap of colonoid and biopsies DEGs. The second script carries out functional analysis on combinations of overlaps between the biopsy and colonoid DEGs and generates a Venn diagram of the shared/not shared DEGs.
 
@@ -151,7 +151,7 @@ This step of the project compares the cytokine treated colonoid data (prior to n
 1. *colonoids_vs_biopsies/chord_diagram_organoids_v_biopsies_lfc.R*
 2. *colonoids_vs_biopsies/biopsy_degs_functional_analysis.R*
 
-## **Dependencies**
+## **--Dependencies--**
 
 R (>= 3.4.0) with the following packages:
 * dplyr (>= 3.2.0)
@@ -172,11 +172,11 @@ Python (>= 3) with the following packages:
 * networkx (>= 2.2)
 * venn (>= 0.1.3)
 
-## **Authors**
+## **--Authors--**
 
 All code in this repository was written and applied by Agatha Treveil in 2019 - [agathat](https://https://github.com/agathat)
 
-## **Acknowledgments**
+## **--Acknowledgments--**
 
 * Nick Powell, Polychronis Pavlidis and members of the Korcsmaros lab for their guidance, support and contributions to the project.
 * Cytoscape - Shannon P et al., Genome Research, 2003
