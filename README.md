@@ -135,7 +135,7 @@ The scripts are as follows:
 1. *shared_interactions/cytoscape_2_or_more_interactions_networks.R*
 2. *shared_interactions/functional_analysis_shared_ints.R*
 
-## **Functional enrichment**
+## **--Functional enrichment--**
 
 This script carries out functional enrichment analysis on the DEGs targeted by each cytokine. It groups the DEGs based on which combiantion of cytokines they are targeted by in the causal networks and then carries out Reactome, KEGG and Gene Ontology Biological Processes enrichment analysis. It requires the output from the 'Cytokine_to_tf_or_deg_direct.py' script.
 
