@@ -7,7 +7,9 @@
 #       biop_file - Excel file of preprocessed biopsy differential expression (provided by Polchronis)
 #       cols - Text file containing the colour (hex code) for each cytokine group eg. 'Il13,tnfa'. Group in column 'category' and hex code in column 'colour'.
 #
-# Output: Script creates chord diagrams (one for UC and one for CD) but they must be saved manually.
+# Output: 
+#     Text files saved of biopsy degs which are in the colonoid datasets (1 for UC and 1 for CD)
+#     Script creates chord diagrams (one for UC and one for CD) but they must be saved manually.
 
 ##### Set up #####
 
@@ -18,10 +20,10 @@ library(readxl)
 library(org.Hs.eg.db)
 library(dplyr) # Must load after Biomart
 
-setwd("../input_data/differential_expression_datasets/")
-all_org_files <- list.files(pattern = "_degs_adjp_0.01_lfc1.txt$")
-cols <- "../input_data/plot_colours_all.txt"
-biop_file <- "Biopsies/GSE16879DEGs/GSE16879DEGsUCandcCDvsHCGEO2R.xlsx"
+setwd("../input_data/differential_expression_datasets/colonoids_processed/")
+all_org_files <- list.files(pattern = "_degs_adjp_0.01_lfc_1.txt$")
+cols <- "../../plot_colours_all.txt"
+biop_file <- "../biopsies/GSE16879DEGsUCandcCDvsHCGEO2R.xlsx"
 
 colours <- read.delim(cols, header = TRUE)
 
@@ -53,7 +55,7 @@ for (file in all_org_files) {
 }
 
 # Join the cytokine columns together
-all_degs2 <- unite(all_degs, cytokines, 3:6, sep="; ") %>% #3:7 if il22 included
+all_degs2 <- unite(all_degs, cytokines, 3:6, sep="; ") %>%
     mutate(cytokines = str_replace_all(cytokines, '; NA,?','')) %>%
     mutate(cytokines = str_replace_all(cytokines, 'NA,?; ',''))
 
@@ -66,7 +68,7 @@ rm(all_degs, degs,all_org_files)
 
 ##### Process biopsy DEGs #####
 
-#GEO file
+# GEO file
 cd_degs <- read_excel(biop_file, sheet ="cCDvsHC")
 uc_degs <- read_excel(biop_file, sheet ="UCvsHC")
 # Seperate gene symbols
@@ -90,6 +92,10 @@ uc_degs <- uc_degs %>% na.omit() %>% dplyr::select(c(Ensembl, in_uc)) %>% unique
 # Extract only the rows with data in  uc column (then crohns col)
 all_degs_uc <- left_join(all_degs2, uc_degs, by = c("ENSEMBL.ID"="Ensembl")) %>% filter(in_uc == TRUE)
 all_degs_cd <- left_join(all_degs2, cd_degs, by = c("ENSEMBL.ID"="Ensembl")) %>% filter(in_cd == TRUE)
+
+# Save these lists of biopsy degs which are in the colonoid datasets
+write.table(all_degs_uc, "uc_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", row.names = F, quote = F)
+write.table(all_degs_cd, "cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", row.names = F, quote = F)
 
 # Collapse the table by the cytokines column with count
 uc_count <- all_degs_uc %>% group_by(cytokines) %>% summarize(uc_count=n())
