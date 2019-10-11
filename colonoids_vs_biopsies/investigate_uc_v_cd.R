@@ -21,8 +21,8 @@ library(ggplot2)
 library(scales)
 library(ggthemes)
 
-uc_degs_f <- "../input_data/differential_expression_datasets/biopsies/uc_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt"
-cd_degs_f <- "../input_data/differential_expression_datasets/biopsies/cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt"
+uc_degs_f <- "../input_data/differential_expression_datasets/biopsies/uc_biopsy_degs_in_colonoid_data_adjp_0.01.txt"
+cd_degs_f <- "../input_data/differential_expression_datasets/biopsies/cd_biopsy_degs_in_colonoid_data_adjp_0.01.txt"
 
 uc_degs <- read.csv(uc_degs_f, sep = "\t")
 cd_degs <- read.csv(cd_degs_f, sep = "\t")
@@ -46,9 +46,9 @@ uc_cd_degs_col <- uc_cd_degs2 %>%
   summarise_all(sum)
 
 # Save the summary file showing the overlaps
-write.table(uc_cd_degs_col, "../uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", quote= F, row.names = F)
+write.table(uc_cd_degs_col, "../uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01.txt", sep = "\t", quote= F, row.names = F)
 # Save summary with the genes in the overlaps
-write.table(uc_cd_degs, "../genes_uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", quote= F, row.names = F)
+write.table(uc_cd_degs, "../genes_uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01.txt", sep = "\t", quote= F, row.names = F)
 
 ##### Plot overlaps #####
 
@@ -63,7 +63,7 @@ degs_plot <- ggplot(data = uc_cd_degs_long, aes(x = cytokines, y = number_of_gen
   xlab("Cytokine group") + ylab("Number of genes") + labs(fill = "Condition") 
 
 # Save plot
-ggsave("../plot_uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.pdf", degs_plot, height = 5, width = 10, device = "pdf")
+ggsave("../plot_uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01.pdf", degs_plot, height = 5, width = 10, device = "pdf")
 
 ##### Plot Venns #####
 
@@ -74,7 +74,7 @@ for (i in 1:nrow(uc_cd_degs_col)){
   cd_all <- uc_cd_degs_col[i,2] + uc_cd_degs_col[i,4]
   cyto <- uc_cd_degs_col[[i,1]]
     
-  pdf(paste0("../", cyto, "_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.pdf"),width=7,height=7) 
+  pdf(paste0("../", cyto, "_biopsy_degs_in_colonoid_data_adjp_0.01.pdf"),width=7,height=7) 
   draw.pairwise.venn(area1 = uc_all, area2 = cd_all, area3 = uc_cd_degs_col[i,4], cross.area = uc_cd_degs_col[i,2], 
                    category = c("UC DEGs", "CD DEGs"), lty = "blank",
                    fontface = rep("plain", 3), fontfamily = rep("sans", 3), cex = rep(6, 3),
@@ -117,4 +117,4 @@ for (i in 1:nrow(uc_cd_degs_col)) {
 }
 
 # Save results
-write.table(all_reactome, "../reactome_uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", quote= F, row.names = F)
+write.table(all_reactome, "../reactome_uc_and_cd_biopsy_degs_in_colonoid_data_adjp_0.01.txt", sep = "\t", quote= F, row.names = F)

@@ -21,7 +21,8 @@ library(org.Hs.eg.db)
 library(dplyr) # Must load after Biomart
 
 setwd("../input_data/differential_expression_datasets/colonoids_processed/")
-all_org_files <- list.files(pattern = "_degs_adjp_0.01_lfc_1.txt$")
+#all_org_files <- list.files(pattern = "_degs_adjp_0.01_lfc_1.txt$")
+all_org_files <- list.files(pattern = "_degs_adjp_0.01.txt$")
 cols <- "../../plot_colours_all.txt"
 biop_file <- "../biopsies/GSE16879DEGsUCandcCDvsHCGEO2R.xlsx"
 
@@ -39,10 +40,12 @@ for (file in all_org_files) {
   degs <- read.delim(file, sep = "\t",header=TRUE,na.strings=c("","NA"))
   
   # Remove columns, filter for lfc >= 1.5
-  degs <- degs  %>% filter((logFC >1.5) | (logFC < -1.5)) %>% dplyr::select(ENSEMBL.ID, SYMBOL)
+  #degs <- degs  %>% filter((logFC >1.5) | (logFC < -1.5)) %>% dplyr::select(ENSEMBL.ID, SYMBOL)
+  degs <- degs %>% dplyr::select(ENSEMBL.ID, SYMBOL)
   
   # Get cytokine name
-  cytokine <- str_replace(file, "_degs_adjp_0.01_lfc_1.txt", "")
+  #cytokine <- str_replace(file, "_degs_adjp_0.01_lfc_1.txt", "")
+  cytokine <- str_replace(file, "_degs_adjp_0.01.txt", "")
   degs <- degs %>% mutate(cytokine = cytokine) 
   
   #join degs together
@@ -75,8 +78,11 @@ uc_degs <- read_excel(biop_file, sheet ="UCvsHC")
 cd_degs <- separate_rows(cd_degs,Gene.symbol,sep="///")
 uc_degs <- separate_rows(uc_degs,Gene.symbol,sep="///")
 # Filter for p adj <= 0.01 and lfc >= 1.5, get gene names
-cd_degs <- cd_degs %>% filter(adj.P.Val <= 0.01 & (logFC >= 1.5 | logFC <= -1.5)) %>% dplyr::select(c(Gene.symbol)) %>% mutate(in_cd = "TRUE") %>% unique() %>% drop_na()
-uc_degs <- uc_degs %>% filter(adj.P.Val <= 0.01 & (logFC >= 1.5 | logFC <= -1.5)) %>% dplyr::select(c(Gene.symbol)) %>% mutate(in_uc = "TRUE") %>% unique() %>% drop_na()
+#cd_degs <- cd_degs %>% filter(adj.P.Val <= 0.01 & (logFC >= 1.5 | logFC <= -1.5)) %>% dplyr::select(c(Gene.symbol)) %>% mutate(in_cd = "TRUE") %>% unique() %>% drop_na()
+#uc_degs <- uc_degs %>% filter(adj.P.Val <= 0.01 & (logFC >= 1.5 | logFC <= -1.5)) %>% dplyr::select(c(Gene.symbol)) %>% mutate(in_uc = "TRUE") %>% unique() %>% drop_na()
+cd_degs <- cd_degs %>% filter(adj.P.Val <= 0.01 ) %>% dplyr::select(c(Gene.symbol)) %>% mutate(in_cd = "TRUE") %>% unique() %>% drop_na()
+uc_degs <- uc_degs %>% filter(adj.P.Val <= 0.01 ) %>% dplyr::select(c(Gene.symbol)) %>% mutate(in_uc = "TRUE") %>% unique() %>% drop_na()
+
 
 # Convert gene symbol to ensembl ID
 row.names(cd_degs) <- cd_degs$Gene.symbol
@@ -94,8 +100,11 @@ all_degs_uc <- left_join(all_degs2, uc_degs, by = c("ENSEMBL.ID"="Ensembl")) %>%
 all_degs_cd <- left_join(all_degs2, cd_degs, by = c("ENSEMBL.ID"="Ensembl")) %>% filter(in_cd == TRUE)
 
 # Save these lists of biopsy degs which are in the colonoid datasets
-write.table(all_degs_uc, "uc_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", row.names = F, quote = F)
-write.table(all_degs_cd, "cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", row.names = F, quote = F)
+#write.table(all_degs_uc, "uc_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", row.names = F, quote = F)
+#write.table(all_degs_cd, "cd_biopsy_degs_in_colonoid_data_adjp_0.01_lfc_1.5.txt", sep = "\t", row.names = F, quote = F)
+write.table(all_degs_uc, "uc_biopsy_degs_in_colonoid_data_adjp_0.01.txt", sep = "\t", row.names = F, quote = F)
+write.table(all_degs_cd, "cd_biopsy_degs_in_colonoid_data_adjp_0.01.txt", sep = "\t", row.names = F, quote = F)
+
 
 # Collapse the table by the cytokines column with count
 uc_count <- all_degs_uc %>% group_by(cytokines) %>% summarize(uc_count=n())
