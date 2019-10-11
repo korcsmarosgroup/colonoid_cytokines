@@ -144,12 +144,13 @@ This script carries out functional enrichment analysis on the DEGs targeted by e
 
 ## **--Colonoids vs biopsies--**
 
-This step of the project compares the cytokine treated colonoid data (prior to network generation) to data obtained from transcriptomics on ulcerative colitis (UC) and Crohn's disease (CD) biopsies. The biopsy data is publically available (GSE16879) and was preprocessed to generate differentially expressed genes prior to running the following scripts. The first script creates chord diagram plots showing the connection/overlap of colonoid and biopsies DEGs. The second script carries out functional analysis on combinations of overlaps between the biopsy and colonoid DEGs and generates a Venn diagram of the shared/not shared DEGs.
+This step of the project compares the cytokine treated colonoid data (prior to network generation) to data obtained from transcriptomics on ulcerative colitis (UC) and Crohn's disease (CD) biopsies. The biopsy data is publically available (GSE16879) and was preprocessed to generate differentially expressed genes prior to running the following scripts. The first script creates chord diagram plots showing the connection/overlap of colonoid and biopsies DEGs. The second script carries out functional analysis on combinations of overlaps between the biopsy and colonoid DEGs and generates a Venn diagram of the shared/not shared DEGs. The third script takes the UC and CD biopsy genes which are alo presen tin the cytokine data and comapres them. It generates plots of the comparison and carries out functional enrichment analysis.
 
 #### Code
 
 1. *colonoids_vs_biopsies/chord_diagram_organoids_v_biopsies_lfc.R*
 2. *colonoids_vs_biopsies/biopsy_degs_functional_analysis.R*
+3. *colonoids_vs_biopsies/investigate_uc_v_cd.R*
 
 ## **--Dependencies--**
 
