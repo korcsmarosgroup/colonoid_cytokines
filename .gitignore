@@ -6,5 +6,5 @@ input_data/expression_datasets/
 input_data/differential_expression_datasets/colonoids*
 input_data/causal_networks/
 input_data/tf_filtering/
-input_data/differential_expression_datasets/biopsies/*1.5.txt
+input_data/differential_expression_datasets/biopsies/*0.01.txt
 
