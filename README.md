@@ -107,11 +107,16 @@ Scripts:
 
 Here, we extract information from the causal networks about which TFs and which DEGs are targeted by each cytokine. The first script imports the causal networks and exports a text file with the cytokine-tf/deg interactions (directly, without any of the intermediate steps). The second script imports the output from the first script, and creates from it a Venn diagram of the overlaps between the networks.
 
+For more detailed visualisation the TF-DEG relationships and which cytokine networks each are shared with, the third script creates network visualisation which should be viewed in cytoscape. The last script looks at the LFC of DEGs targeted by shared TFs and plots density plots.
+
+
 #### Code
 
 Scripts:
-1. *cytokine_to_tf_or_deg_direct.py*
-2. *venn_network_tf_or_deg.py*
+1. *figures_and_summaries/cytokine_to_tf_or_deg_direct.py*
+2. *figures_and_summaries/venn_network_tf_or_deg.py*
+3. *figures_and_summaries/cyto-tf-deg_figure.R*
+4. *figures_and_summaries/tf_target_investigation.Rmd*
 
 ### Other plots
 

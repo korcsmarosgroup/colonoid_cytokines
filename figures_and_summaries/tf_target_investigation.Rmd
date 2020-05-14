@@ -1,0 +1,173 @@
+---
+title: "Investigating the targets of transcription factors"
+author: "Agatha Treveil"
+date: "July 25, 2019"
+output:
+  html_document:
+    df_print: paged
+  html_notebook:
+    fig_caption: yes
+---
+
+Through analysis of the Cytokine causal networks we have identified a group of transcription factors which are shared between some of the networks. We are interested in investigating whether these transcription factors have similar actions on their targets. One way to look at this is to see what the targets are of each of the TFs in the each of the networks. Another way is to look at what the lfc values are of these targets (all are differentially expressed at q val <= 0.01). 
+
+
+# Setup
+
+```{r, setup, include=FALSE}
+
+knitr::opts_knit$set(root.dir = normalizePath("../"))
+
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+
+```
+
+First we must load the of TFs of interest from a previously generated file.
+
+```{r, loadtfs, echo=FALSE}
+tf_df <- read.csv("input/AllCytokines_to_tf_shared_network.txt", sep = "\t", header = TRUE)
+```
+
+
+Then we must load the networks of interest and filter them for TF->DEG interactions involving the tfs of interest. We output all the TF->DEG interactions of interest for all the cytokines in one network. This output network has the same columns as the input networks plus an additional column to indicate which original cytokine network the interaction came from. 
+
+```{r, loadnetworks, echo = FALSE}
+cytokines <- c("il17","il13","ifng","tnfa")
+all_tf_degs <- data.frame()
+
+for (cyto in cytokines) {
+  
+  tfs <- tf_df %>% filter(grepl(cyto, cytokine_all))
+  
+  net_path <- paste("input/", cyto, "_omnip_deg_network.txt", sep ="")
+  cyto_df <- read.csv(net_path, header=TRUE, sep = "\t", stringsAsFactors = FALSE)
+  cyto_df_filt <- cyto_df %>% filter((source_ensembl_id %in% tfs$tf_ensembl_id) & (level == "tf-target")) %>% mutate(Cyto_network = cyto)
+  
+  all_tf_degs <- rbind(all_tf_degs, cyto_df_filt)
+  
+  rm(tfs, cyto_df_filt, cyto_df)
+}
+```
+
+# What are the DEGs?
+
+To investigate what the DEG targets are of each TF, we can count the overlap of DEG targets of each transcription factor in each network. 
+```{r, echo=FALSE}
+
+deg_counts <- data.frame()
+
+split_tf_deg <- split(all_tf_degs, f = all_tf_degs$source_ensembl_id)
+
+for (tf in split_tf_deg) {
+  cyto_name <- toString(tf[[1,14]])
+  tf <- tf %>% group_by(target_ensembl_id) %>% mutate(cytokines = paste0(Cyto_network, collapse = ",")) %>% select(target_ensembl_id, cytokines) %>% unique()
+  by_cyto <- tf %>% group_by(cytokines) %>% summarise(deg_count = n()) %>% mutate(TF = cyto_name) %>% mutate(proportion = deg_count/sum(deg_count))
+  deg_counts <- rbind(deg_counts,by_cyto)
+}
+
+```
+
+Here is the plot of the results using the standard colour scheme.
+```{r, barplot, echo=FALSE}
+barplot <- ggplot() + 
+  geom_bar(aes(y = deg_count, x = TF, fill = cytokines), data = deg_counts, stat="identity") + 
+  labs(title = "Overlap of DEGs targeted by TFs found in multiple networks", 
+    y = "Number of targets", x = "Transcription factor", fill = "Cytokine networks") +
+  scale_fill_manual(breaks = c("ifng", "ifng,tnfa", "il13","il13,ifng","il13,ifng,tnfa","il13,tnfa","il17","il17,ifng","tnfa"), 
+                       values=c("#FF0033", "#CC00FF", "#e8e800","#FF9900","#663300","#339900","#8e8d8d","#cc6076","#3366FF"))
+barplot
+```
+
+
+Here is a plot of the results using proportions instead of absolute numbers.
+```{r, barplot_scaled, echo=FALSE}
+barplot_scale <- ggplot() + 
+  geom_bar(aes(y = proportion, x = TF, fill = cytokines), data = deg_counts, stat="identity") + 
+  labs(title = "Proportional overlap of DEGs targeted by TFs found in multiple networks", 
+    y = "Proportion of targets", x = "Transcription factor", fill = "Cytokine networks") +
+  scale_fill_manual(breaks = c("ifng", "ifng,tnfa", "il13","il13,ifng","il13,ifng,tnfa","il13,tnfa","il17","il17,ifng","tnfa"), 
+                       values=c("#FF0033", "#CC00FF", "#e8e800","#FF9900","#663300","#339900","#8e8d8d","#cc6076","#3366FF"))
+barplot_scale
+```
+
+Additionally if we want to see the overlapped categories more easily we can change the colour scheme.
+
+```{r, echo=FALSE}
+barplot_scale_g <- ggplot() + 
+  geom_bar(aes(y = proportion, x = TF, fill = cytokines), data = deg_counts, stat="identity") + 
+  labs(title = "Proportional overlap of DEGs targeted by TFs found in multiple networks", 
+    y = "Proportion of targets", x = "Transcription factor", fill = "Cytokine networks") +
+  scale_fill_manual(breaks = c("ifng", "ifng,tnfa", "il13","il13,ifng","il13,ifng,tnfa","il13,tnfa","il17","il17,ifng","tnfa"), 
+                       values=c("#8e8d8d", "#CC00FF", "#8e8d8d","#FF9900","#663300","#339900","#8e8d8d","#cc6076","#8e8d8d"))
+barplot_scale_g
+
+```
+ In addition, we will save the data file and the plots.
+ 
+```{r, barplot_scaled_g, echo=FALSE, eval=FALSE, results="hide"}
+write.table(deg_counts, file = "Subnetworks/Cyto-shared-tf/TF_deg_overlap.txt", row.names = FALSE, sep ="\t", quote = FALSE)
+pdf(file="Subnetworks/Cyto-shared-tf/TF_deg_overlap.pdf")
+barplot
+dev.off()
+pdf(file="Subnetworks/Cyto-shared-tf/TF_deg_overlap_scales_grey.pdf")
+barplot_scale_g
+dev.off()
+pdf(file="Subnetworks/Cyto-shared-tf/TF_deg_overlap_scales.pdf")
+barplot_scale
+dev.off()
+```
+ 
+# What are the LFCs of the shared DEGs?
+
+Even though the proportion of DEGs shared between the TFs appears to be low between the networks, we will look at the distribution of LFC of these shared DEGs across the networks. For this we create one density plot per transcription factor. If there are 5 or less DEGs targetted by a particular TF in multiple networks, the density plot will not be generated.
+
+```{r, lfc, echo=FALSE}
+
+for (tf in split_tf_deg){
+   tf_name <- toString(tf[[1,14]])
+   
+   tf_lfc <- tf %>% select(target_ensembl_id, target_logFC, Cyto_network)
+   tf_group <- tf_lfc %>% select(-c(target_logFC)) %>% group_by(target_ensembl_id) %>%
+     mutate(cytokines = paste0(Cyto_network, collapse = ",")) %>% select(-c(Cyto_network)) %>% unique()
+   
+   if (tf_name == "ETS1"){
+     tf_group_filt <- tf_group %>% filter(grepl(',[a-z]+,',cytokines))
+     tf_lfc <- tf_lfc %>% filter(target_ensembl_id %in% tf_group_filt$target_ensembl_id)
+   } else {
+     tf_group_filt <- tf_group %>% filter(grepl(",",cytokines))
+     tf_lfc <- tf_lfc %>% filter(target_ensembl_id %in% tf_group_filt$target_ensembl_id)
+   }
+   
+   if ((nrow(tf_lfc) >5)&(tf_name == "CEBPA")){#"IRF1")){ #| tf_name == "ETS1")){
+     plot_title <- paste0("LFC of shared DEGs targeted by ", tf_name, " in different cytokine networks")
+   dens_plt <- ggplot(tf_lfc, aes(target_logFC, fill = Cyto_network, colour = Cyto_network)) + 
+     theme_bw()+
+     scale_color_manual(values=c("red","blue"))+ #"darkgoldenrod1", "blue"))+
+     scale_fill_manual(values=c("red", "blue"))+#"darkgoldenrod1", "blue")) +
+     geom_density(alpha = 0.1) +
+     xlim(-4,4) +
+     ylim(0,0.85)+
+     theme(text = element_text(size = 20),plot.title = element_text(size = 10)) +
+     labs(title = plot_title, y = "Density", x = "Log fold change", fill = "Cytokine networks", colour = "Cytokine networks")
+    print(dens_plt)
+    
+    pdf(file=paste0("figures/new_SharedDEGs_DensityPlots/Densityplot_sharedDEGs_lfc_", tf_name,".pdf"), height =5, width=7)
+    print(dens_plt)
+    dev.off()
+    
+   } else{
+     print( paste0(tf_name, " not plotted as less than 5 DEGs targetted by it in multiple networks"))
+   }
+   
+   
+}
+
+
+```
+
+
+
+
+

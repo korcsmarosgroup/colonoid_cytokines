@@ -67,6 +67,7 @@ degs_count <- all_degs2 %>%
   group_by(cytokines) %>% 
   summarise(org_count = n())
 
+#write.table(degs_count, "deg_counts_categories.txt", row.names = F, sep = "\t")
 rm(all_degs, degs,all_org_files)
 
 ##### Process biopsy DEGs #####
